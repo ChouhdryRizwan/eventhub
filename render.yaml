@@ -1,0 +1,62 @@
+# Render Blueprint for the Strapi backend (the frontend deploys to Vercel).
+# Create it with: Render dashboard > New > Blueprint > pick this repository.
+# Values marked `sync: false` are asked for in the dashboard and are never stored in git.
+services:
+  - type: web
+    name: eventhub-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    region: singapore # pick the region closest to your NeonDB project
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /_health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: IS_PROXIED
+        value: "true"
+      - key: DATABASE_CLIENT
+        value: postgres
+      - key: DATABASE_SSL
+        value: "true"
+      - key: DATABASE_SSL_REJECT_UNAUTHORIZED
+        value: "false"
+      - key: SEED_DATA
+        value: "true"
+      - key: PUBLIC_URL
+        sync: false # https://<your-service>.onrender.com
+      - key: CORS_ORIGINS
+        sync: false # https://<your-app>.vercel.app
+      - key: FRONTEND_URL
+        sync: false # https://<your-app>.vercel.app (links in emails, redirect after confirming)
+      - key: SMTP_USER
+        sync: false # Gmail address that sends the emails
+      - key: SMTP_PASS
+        sync: false # Gmail App password (16 characters). NOTE: Render's free tier blocks SMTP, see README
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_KEYS
+        sync: false
+      - key: API_TOKEN_SALT
+        generateValue: true
+      - key: ADMIN_JWT_SECRET
+        generateValue: true
+      - key: TRANSFER_TOKEN_SALT
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: CLOUDINARY_NAME
+        sync: false
+      - key: CLOUDINARY_KEY
+        sync: false
+      - key: CLOUDINARY_SECRET
+        sync: false
+      - key: ADMIN_SEED_EMAIL
+        sync: false
+      - key: ADMIN_SEED_PASSWORD
+        sync: false

@@ -1,0 +1,114 @@
+@import "leaflet/dist/leaflet.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-base: #0d0d0d;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --border-light: #e5e7eb;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white font-jakarta text-gray-900 antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-syne;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-light ring-offset-2;
+  }
+}
+
+/* Leaflet: keep the map below the sticky navbar and match the card radius */
+.leaflet-container {
+  @apply z-0 h-full w-full rounded-card font-jakarta;
+}
+
+/* Category-coloured map pin (a rotated teardrop built from one element). */
+.eh-pin-wrap {
+  background: none;
+  border: 0;
+}
+
+.eh-pin {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 3px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background: var(--pin, #5b21b6);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
+  transform: rotate(-45deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.15s ease;
+}
+
+.eh-pin::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 34%;
+  height: 34%;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* Highlighted pin (FR-06): bigger, with a pulsing ring. */
+.eh-pin-active {
+  box-shadow: 0 0 0 4px rgb(124 58 237 / 0.35), 0 4px 10px rgb(0 0 0 / 0.45);
+  animation: eh-pulse 1.4s ease-out infinite;
+}
+
+@keyframes eh-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(124 58 237 / 0.55), 0 4px 10px rgb(0 0 0 / 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgb(124 58 237 / 0), 0 4px 10px rgb(0 0 0 / 0.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eh-pin-active {
+    animation: none;
+  }
+}
+
+/* Touch-friendly map zoom buttons (FR-10) */
+.leaflet-touch .leaflet-bar a,
+.leaflet-bar a {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 20px;
+}
+
+/* Photo counter ("1 / 3") instead of tiny dots: nothing to tap, so no touch-target problem */
+.swiper-pagination-fraction {
+  left: 50% !important;
+  width: auto !important;
+  bottom: 12px !important;
+  transform: translateX(-50%);
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: rgb(13 13 13 / 0.72);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}

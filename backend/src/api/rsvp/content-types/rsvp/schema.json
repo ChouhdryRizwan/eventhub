@@ -1,0 +1,12 @@
+{
+  "kind": "collectionType",
+  "collectionName": "rsvps",
+  "info": { "singularName": "rsvp", "pluralName": "rsvps", "displayName": "RSVP" },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "user": { "type": "relation", "relation": "manyToOne", "target": "plugin::users-permissions.user" },
+    "event": { "type": "relation", "relation": "manyToOne", "target": "api::event.event" },
+    "status": { "type": "enumeration", "enum": ["confirmed", "cancelled"], "default": "confirmed" },
+    "rsvp_date": { "type": "datetime" }
+  }
+}
