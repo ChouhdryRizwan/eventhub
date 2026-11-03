@@ -7,7 +7,7 @@ services:
     runtime: node
     rootDir: backend
     plan: free
-    region: singapore # pick the region closest to your NeonDB project
+    region: ohio # same region as the NeonDB project (AWS US East 2, Ohio)
     buildCommand: npm install && npm run build
     startCommand: npm run start
     healthCheckPath: /_health
