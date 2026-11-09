@@ -19,7 +19,12 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, status, isAdmin } = useAuth();
+  const { user, status, isAdmin, clear } = useAuth();
+  // Show the logged-out navbar immediately; the server action then clears the cookie and redirects home.
+  const logout = () => {
+    clear();
+    return logoutAction();
+  };
   const [scrolled, setScrolled] = useState(false);
   // The mobile menu is "open for" a specific path, so navigating elsewhere closes it without an effect.
   const [openFor, setOpenFor] = useState<string | null>(null);
@@ -78,7 +83,7 @@ export default function Navbar() {
                 <LayoutDashboard className="size-4" aria-hidden />
                 {user.name.split(" ")[0] || "Dashboard"}
               </Link>
-              <form action={logoutAction}>
+              <form action={logout}>
                 <Button type="submit" variant="ghost" aria-label="Log out">
                   <LogOut className="size-4" aria-hidden />
                 </Button>
@@ -138,7 +143,7 @@ export default function Navbar() {
                     Admin panel
                   </Link>
                 )}
-                <form action={logoutAction}>
+                <form action={logout}>
                   <Button type="submit" variant="ghost" className="w-full">
                     Log out
                   </Button>

@@ -47,17 +47,11 @@ export async function getCachedHomeData() {
     if (slug) counts[slug] = (counts[slug] ?? 0) + 1;
   }
 
-  // Featured events whose date has passed drop out. If fewer than 3 remain, top the section up with
-  // the soonest upcoming events so the homepage never loses it (admins can re-feature at any time).
-  const featured = upcoming.filter((e) => e.is_featured).slice(0, 6);
-  for (const event of upcoming) {
-    if (featured.length >= 3) break;
-    if (!featured.includes(event)) featured.push(event);
-  }
-
   return {
     categories,
-    featured,
+    // Only events an admin marked as featured and that have not happened yet. The homepage hides the
+    // section when there are none.
+    featured: upcoming.filter((e) => e.is_featured).slice(0, 6),
     upcoming: upcoming.slice(0, 6), // already sorted by start date by the API call
     counts,
     stats: {

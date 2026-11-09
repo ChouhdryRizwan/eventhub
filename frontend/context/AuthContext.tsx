@@ -20,6 +20,8 @@ interface AuthState {
   isAdmin: boolean;
   /** Re-read the session from the server (e.g. after a profile edit). */
   refresh: () => void;
+  /** Forget the session locally right away (used the moment the user logs out). */
+  clear: () => void;
 }
 
 interface SessionPayload {
@@ -34,6 +36,7 @@ const AuthContext = createContext<AuthState>({
   isAuthenticated: false,
   isAdmin: false,
   refresh: () => {},
+  clear: () => {},
 });
 
 /**
@@ -65,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [pathname, tick]);
 
   const refresh = useCallback(() => setTick((n) => n + 1), []);
+  const clear = useCallback(() => setSession(null), []);
 
   const value = useMemo<AuthState>(() => {
     const user: AuthUser | null = session?.user
@@ -83,8 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: Boolean(user),
       isAdmin: user?.role === "admin",
       refresh,
+      clear,
     };
-  }, [session, refresh]);
+  }, [session, refresh, clear]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

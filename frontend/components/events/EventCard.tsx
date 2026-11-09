@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, MapPin, Star } from "lucide-react";
 import { CategoryIcon } from "@/lib/category-meta";
 import CategoryBadge from "@/components/shared/CategoryBadge";
 import { cn, formatEventDate, formatEventTime, formatPrice, imageUrl } from "@/lib/utils";
@@ -59,6 +59,11 @@ export default function EventCard({ event, highlighted, priority, onHover, onSel
         <span className="absolute right-3 top-3 rounded-full bg-ink/80 px-3 py-1 text-xs font-bold text-white">
           {formatPrice(event)}
         </span>
+        {event.is_featured && (
+          <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-ink">
+            <Star className="size-3.5 fill-current" aria-hidden /> Featured
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4">
