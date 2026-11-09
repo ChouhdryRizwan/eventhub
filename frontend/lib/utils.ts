@@ -33,6 +33,11 @@ export function formatEventTime(iso: string) {
   return timeFormat.format(new Date(iso));
 }
 
+/** True once an event is over: its end time, or its start time when no end is set. */
+export function hasEventEnded(event: Pick<Event, "start_datetime" | "end_datetime">, now = Date.now()) {
+  return new Date(event.end_datetime ?? event.start_datetime).getTime() < now;
+}
+
 export function formatPrice(event: Pick<Event, "is_free" | "ticket_price">) {
   if (event.is_free || !event.ticket_price) return "Free";
   return `Rs. ${event.ticket_price.toLocaleString("en-PK")}`;

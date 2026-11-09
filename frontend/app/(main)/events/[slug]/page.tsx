@@ -15,7 +15,7 @@ import { getFeaturedEvents, getMyBookmarkForEvent, getMyRsvpForEvent } from "@/l
 import { auth } from "@/lib/auth";
 import { getCachedEvent, getCachedReviews } from "@/lib/data";
 import { SITE_URL } from "@/lib/site";
-import { cn, directionsUrl, formatEventDate, formatEventTime, formatPrice, imageUrl } from "@/lib/utils";
+import { cn, directionsUrl, formatEventDate, formatEventTime, formatPrice, hasEventEnded, imageUrl } from "@/lib/utils";
 import type { Event } from "@/types";
 
 type Params = Promise<{ slug: string }>;
@@ -137,6 +137,7 @@ async function PersonalActions({ event }: { event: Event }) {
       eventId={event.documentId}
       slug={event.slug}
       isAuthenticated={Boolean(session)}
+      ended={hasEventEnded(event)}
       initialAttending={attending}
       initialSaved={saved}
     />

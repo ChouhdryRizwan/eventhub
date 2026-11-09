@@ -3,11 +3,13 @@
 import axios from "axios";
 import { updateTag } from "next/cache";
 import { auth } from "@/lib/auth";
+import { hasEventEnded } from "@/lib/utils";
 import {
   createBookmark,
   createReview,
   createRsvp,
   deleteBookmark,
+  getEventBySlug,
   getMyBookmarkForEvent,
   getMyRsvpForEvent,
   updateRsvp,
@@ -39,6 +41,10 @@ export async function setRsvpAction(eventId: string, slug: string, attending: bo
   const token = session.accessToken;
 
   try {
+    if (attending) {
+      const event = await getEventBySlug(slug);
+      if (event && hasEventEnded(event)) return { ok: false, error: "This event has already ended." };
+    }
     const existing = await getMyRsvpForEvent(eventId, token);
     const status = attending ? "confirmed" : "cancelled";
     if (existing) {
@@ -74,6 +80,8 @@ export async function setBookmarkAction(eventId: string, slug: string, save: boo
 export interface ReviewState {
   ok?: boolean;
   error?: string;
+  /** The text the user typed, echoed back on failure so it is not lost. */
+  text?: string;
 }
 
 export async function submitReviewAction(_prev: ReviewState, formData: FormData): Promise<ReviewState> {
@@ -82,19 +90,19 @@ export async function submitReviewAction(_prev: ReviewState, formData: FormData)
   const rating = Number(formData.get("rating"));
   const text = String(formData.get("review_text") ?? "").trim();
 
-  if (!isId(eventId) || !isSlug(slug)) return { error: GENERIC_ERROR };
-  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return { error: "Choose a star rating from 1 to 5." };
-  if (text.length < 3) return { error: "Write a few words about your experience." };
-  if (text.length > 2000) return { error: "Reviews can be up to 2000 characters." };
+  if (!isId(eventId) || !isSlug(slug)) return { error: GENERIC_ERROR, text };
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return { error: "Choose a star rating from 1 to 5.", text };
+  if (text.length < 3) return { error: "Write a few words about your experience.", text };
+  if (text.length > 2000) return { error: "Reviews can be up to 2000 characters.", text };
 
   const session = await auth();
-  if (!session) return { error: LOGIN_REQUIRED };
+  if (!session) return { error: LOGIN_REQUIRED, text };
 
   try {
     await createReview({ event: eventId, rating, review_text: text }, session.accessToken);
     updateTag(`event-${slug}`);
     return { ok: true };
   } catch (error) {
-    return { error: messageFrom(error) };
+    return { error: messageFrom(error), text };
   }
 }

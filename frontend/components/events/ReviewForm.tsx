@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -19,15 +19,17 @@ export default function ReviewForm({
   slug: string;
   isAuthenticated: boolean;
 }) {
-  const [state, action, pending] = useActionState(submitReviewAction, initial);
-  const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    if (state.ok) {
+  const [rating, setRating] = useState(0);
+  // React clears uncontrolled fields after every action, so a failed attempt echoes the text back
+  // (state.text -> defaultValue) and the stars live in state that only a successful post resets.
+  const [state, action, pending] = useActionState(async (prev: ReviewState, formData: FormData) => {
+    const result = await submitReviewAction(prev, formData);
+    if (result.ok) {
+      setRating(0);
       toast.success("Thanks! Your review was posted.");
-      formRef.current?.reset();
     }
-  }, [state]);
+    return result;
+  }, initial);
 
   if (!isAuthenticated) {
     return (
@@ -44,11 +46,11 @@ export default function ReviewForm({
   }
 
   return (
-    <form ref={formRef} action={action} className="space-y-4 rounded-card border border-gray-200 bg-white p-5" noValidate>
+    <form action={action} className="space-y-4 rounded-card border border-gray-200 bg-white p-5" noValidate>
       <input type="hidden" name="eventId" value={eventId} />
       <input type="hidden" name="slug" value={slug} />
 
-      <StarInput name="rating" disabled={pending} />
+      <StarInput name="rating" value={rating} onChange={setRating} disabled={pending} />
 
       <div>
         <label htmlFor="review_text" className="mb-1.5 block text-sm font-semibold text-gray-700">
@@ -60,6 +62,7 @@ export default function ReviewForm({
           rows={4}
           maxLength={2000}
           required
+          defaultValue={state.text ?? ""}
           disabled={pending}
           placeholder="What did you think of this event?"
           className="w-full rounded-xl border border-gray-200 bg-white p-4 text-sm placeholder:text-gray-400 focus:border-primary-light focus:outline-none focus:ring-2 focus:ring-primary-light/30"

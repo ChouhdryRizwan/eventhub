@@ -26,9 +26,19 @@ export function StarDisplay({ value, className }: { value: number; className?: s
   );
 }
 
-/** Clickable 1-5 star input; submits its value under `name` with the surrounding form. */
-export function StarInput({ name, disabled }: { name: string; disabled?: boolean }) {
-  const [value, setValue] = useState(0);
+/** Clickable 1-5 star input (controlled); submits its value under `name` with the surrounding form. */
+export function StarInput({
+  name,
+  value,
+  onChange,
+  disabled,
+}: {
+  name: string;
+  value: number;
+  onChange: (value: number) => void;
+  disabled?: boolean;
+}) {
+  const setValue = onChange;
   const [hover, setHover] = useState(0);
   const shown = hover || value;
 

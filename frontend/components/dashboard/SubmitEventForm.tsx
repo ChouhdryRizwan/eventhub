@@ -15,7 +15,7 @@ const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   return message ? (
-    <p id={id} role="alert" className="mt-1 text-xs text-red-600">
+    <p id={id} role="alert" data-field-error className="mt-1 text-xs text-red-600">
       {message}
     </p>
   ) : null;
@@ -55,6 +55,7 @@ export default function SubmitEventForm({ categories }: { categories: Category[]
   const [state, setState] = useState<SubmitEventState>({});
   const [pending, startTransition] = useTransition();
   const fileInput = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const errors = state.fieldErrors ?? {};
 
   const set = (key: keyof typeof values) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -91,16 +92,24 @@ export default function SubmitEventForm({ categories }: { categories: Category[]
       if (result) {
         setState(result);
         if (result.error) toast.error(result.error);
-        else document.querySelector<HTMLElement>("[role=alert]")?.scrollIntoView({ block: "center", behavior: "smooth" });
       }
     });
   };
+
+  // Once the errors are rendered, jump to the first invalid field (document order) and focus it.
+  useEffect(() => {
+    if (!state.fieldErrors || Object.keys(state.fieldErrors).length === 0) return;
+    const target = formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"], [data-field-error]');
+    if (!target) return;
+    target.scrollIntoView({ block: "center", behavior: "smooth" });
+    target.focus({ preventScroll: true });
+  }, [state]);
 
   const err = (field: SubmitField) => errors[field];
   const invalid = (field: SubmitField) => !!errors[field];
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6" noValidate>
+    <form ref={formRef} onSubmit={onSubmit} className="space-y-6" noValidate>
       {state.error && (
         <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
@@ -137,7 +146,7 @@ export default function SubmitEventForm({ categories }: { categories: Category[]
           <Label htmlFor="short_desc">
             Short summary <span className="font-normal text-gray-400">(shown on cards, {values.short_desc.length}/200)</span>
           </Label>
-          <Input id="short_desc" value={values.short_desc} onChange={set("short_desc")} maxLength={200} aria-describedby="short_desc-error" />
+          <Input id="short_desc" value={values.short_desc} onChange={set("short_desc")} maxLength={200} aria-invalid={invalid("short_desc")} aria-describedby="short_desc-error" />
           <FieldError id="short_desc-error" message={err("short_desc")} />
         </div>
         <div>

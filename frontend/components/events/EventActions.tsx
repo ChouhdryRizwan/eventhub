@@ -12,15 +12,25 @@ interface EventActionsProps {
   eventId: string;
   slug: string;
   isAuthenticated: boolean;
+  /** The event is over: no new RSVPs (saving is still allowed). */
+  ended: boolean;
   initialAttending: boolean;
   initialSaved: boolean;
 }
 
-export default function EventActions({ eventId, slug, isAuthenticated, initialAttending, initialSaved }: EventActionsProps) {
+export default function EventActions({ eventId, slug, isAuthenticated, ended, initialAttending, initialSaved }: EventActionsProps) {
   const [attending, setAttending] = useState(initialAttending);
   const [saved, setSaved] = useState(initialSaved);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  if (!isAuthenticated && ended) {
+    return (
+      <p className="flex min-h-11 items-center justify-center rounded-xl bg-gray-100 px-4 text-sm font-semibold text-gray-600">
+        This event has ended
+      </p>
+    );
+  }
 
   if (!isAuthenticated) {
     const loginHref = `/login?callbackUrl=${encodeURIComponent(`/events/${slug}`)}`;
@@ -61,7 +71,11 @@ export default function EventActions({ eventId, slug, isAuthenticated, initialAt
 
   return (
     <div className="space-y-2">
-      {attending ? (
+      {ended ? (
+        <p className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 text-sm font-semibold text-gray-600">
+          {attending ? "You attended this event" : "This event has ended"}
+        </p>
+      ) : attending ? (
         confirmCancel ? (
           <div role="alertdialog" aria-label="Confirm cancelling your RSVP" className="rounded-xl border border-red-200 bg-red-50 p-3">
             <p className="text-sm font-semibold text-red-800">Cancel your RSVP?</p>

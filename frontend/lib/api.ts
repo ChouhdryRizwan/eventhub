@@ -19,6 +19,16 @@ const api = axios.create({
   timeout: 60000,
 });
 
+// A sleeping Render service can answer with an HTML "waking up" page and a 200 status. Treat any
+// non-JSON GET response as a failure, so callers show their error state (and nothing broken is
+// cached) instead of crashing on `undefined.data`.
+api.interceptors.response.use((response) => {
+  if (response.config.method === "get" && typeof response.data === "string") {
+    throw new Error("The API returned an unexpected (non-JSON) response; it may still be waking up.");
+  }
+  return response;
+});
+
 const withToken = (token?: string): AxiosRequestConfig =>
   token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
