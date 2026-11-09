@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
 import Link from "next/link";
+import RemountOnReveal from "@/components/shared/RemountOnReveal";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import CategoryBadge from "@/components/shared/CategoryBadge";
 import { formatEventDate, formatEventTime } from "@/lib/utils";
@@ -97,50 +98,52 @@ export default function LeafletMap({ events, highlightedId, selectedId, onSelect
   const located = useMemo(() => events.filter(hasCoords), [events]);
 
   return (
-    <MapContainer
-      center={KARACHI}
-      zoom={11}
-      scrollWheelZoom
-      className="h-full w-full"
-      aria-label="Map of events"
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <FitBounds events={located} active={active} />
-      <FocusMarker events={located} highlightedId={highlightedId} selectedId={selectedId} markers={markers} />
-
-      {located.map((event) => {
-        const highlighted = event.documentId === (highlightedId ?? selectedId);
-        return (
-          <Marker
-            key={event.documentId}
-            position={[event.latitude, event.longitude]}
-            icon={pinIcon(event.category?.color ?? DEFAULT_COLOR, highlighted)}
-            zIndexOffset={highlighted ? 1000 : 0}
-            title={event.title}
-            ref={(marker) => {
-              if (marker) markers.current.set(event.documentId, marker);
-              else markers.current.delete(event.documentId);
-            }}
-            eventHandlers={{ click: () => onSelect(event.documentId) }}
-          >
-            <Popup>
-              <div className="min-w-44 space-y-1.5 font-jakarta">
-                <CategoryBadge category={event.category} />
-                <p className="text-sm font-bold leading-snug text-gray-900">{event.title}</p>
-                <p className="text-xs text-gray-600">
-                  {formatEventDate(event.start_datetime)} · {formatEventTime(event.start_datetime)}
-                </p>
-                <Link href={`/events/${event.slug}`} className="inline-block text-xs font-semibold text-primary hover:underline">
-                  View details →
-                </Link>
-              </div>
-            </Popup>
-          </Marker>
-        );
-      })}
-    </MapContainer>
+    <RemountOnReveal fallback={<div className="h-full w-full animate-pulse rounded-card bg-gray-100" aria-hidden />}>
+      <MapContainer
+        center={KARACHI}
+        zoom={11}
+        scrollWheelZoom
+        className="h-full w-full"
+        aria-label="Map of events"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <FitBounds events={located} active={active} />
+        <FocusMarker events={located} highlightedId={highlightedId} selectedId={selectedId} markers={markers} />
+  
+        {located.map((event) => {
+          const highlighted = event.documentId === (highlightedId ?? selectedId);
+          return (
+            <Marker
+              key={event.documentId}
+              position={[event.latitude, event.longitude]}
+              icon={pinIcon(event.category?.color ?? DEFAULT_COLOR, highlighted)}
+              zIndexOffset={highlighted ? 1000 : 0}
+              title={event.title}
+              ref={(marker) => {
+                if (marker) markers.current.set(event.documentId, marker);
+                else markers.current.delete(event.documentId);
+              }}
+              eventHandlers={{ click: () => onSelect(event.documentId) }}
+            >
+              <Popup>
+                <div className="min-w-44 space-y-1.5 font-jakarta">
+                  <CategoryBadge category={event.category} />
+                  <p className="text-sm font-bold leading-snug text-gray-900">{event.title}</p>
+                  <p className="text-xs text-gray-600">
+                    {formatEventDate(event.start_datetime)} · {formatEventTime(event.start_datetime)}
+                  </p>
+                  <Link href={`/events/${event.slug}`} className="inline-block text-xs font-semibold text-primary hover:underline">
+                    View details →
+                  </Link>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </RemountOnReveal>
   );
 }

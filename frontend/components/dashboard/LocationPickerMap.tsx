@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import L from "leaflet";
+import RemountOnReveal from "@/components/shared/RemountOnReveal";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import type { LocationPickerProps } from "@/components/dashboard/LocationPicker";
 
@@ -35,20 +36,22 @@ function Recenter({ latitude, longitude }: { latitude: number | null; longitude:
 export default function LocationPickerMap({ latitude, longitude, onChange }: LocationPickerProps) {
   const hasPoint = latitude != null && longitude != null;
   return (
-    <MapContainer
-      center={hasPoint ? [latitude, longitude] : KARACHI}
-      zoom={hasPoint ? 15 : 11}
-      scrollWheelZoom={false}
-      className="h-full w-full"
-      aria-label="Click the map to set the venue location"
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <ClickToPlace onChange={onChange} />
-      <Recenter latitude={latitude} longitude={longitude} />
-      {hasPoint && <Marker position={[latitude, longitude]} icon={pin} />}
-    </MapContainer>
+    <RemountOnReveal fallback={<div className="h-full w-full animate-pulse rounded-card bg-gray-100" aria-hidden />}>
+      <MapContainer
+        center={hasPoint ? [latitude, longitude] : KARACHI}
+        zoom={hasPoint ? 15 : 11}
+        scrollWheelZoom={false}
+        className="h-full w-full"
+        aria-label="Click the map to set the venue location"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <ClickToPlace onChange={onChange} />
+        <Recenter latitude={latitude} longitude={longitude} />
+        {hasPoint && <Marker position={[latitude, longitude]} icon={pin} />}
+      </MapContainer>
+    </RemountOnReveal>
   );
 }
