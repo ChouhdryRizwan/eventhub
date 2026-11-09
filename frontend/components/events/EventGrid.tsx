@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SearchX } from "lucide-react";
-import EventCard from "@/components/events/EventCard";
+import EventListItem from "@/components/events/EventListItem";
 import { Button } from "@/components/ui/button";
+import { sortUpcomingFirst } from "@/lib/utils";
 import type { Event } from "@/types";
 
 const PAGE_SIZE = 8;
@@ -20,6 +21,8 @@ interface EventGridProps {
 
 export default function EventGrid({ events, highlightedId, loading, error, onHover, onSelect, onReset }: EventGridProps) {
   const [visible, setVisible] = useState(PAGE_SIZE);
+
+  const ordered = useMemo(() => sortUpcomingFirst(events), [events]);
 
   if (error) {
     return (
@@ -44,28 +47,27 @@ export default function EventGrid({ events, highlightedId, loading, error, onHov
     );
   }
 
-  const shown = events.slice(0, visible);
+  const shown = ordered.slice(0, visible);
 
   return (
     <div aria-busy={loading} className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
-      <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
+      <ul className="grid gap-3 md:grid-cols-2 lg:grid-cols-1">
         {shown.map((event, i) => (
           <li key={event.documentId}>
-            <EventCard
+            <EventListItem
               event={event}
-              priority={i < 2}
+              priority={i < 4}
               highlighted={highlightedId === event.documentId}
               onHover={onHover}
               onSelect={onSelect}
-              className="h-full"
             />
           </li>
         ))}
       </ul>
-      {visible < events.length && (
+      {visible < ordered.length && (
         <div className="mt-6 text-center">
           <Button variant="outline" onClick={() => setVisible((v) => v + PAGE_SIZE)}>
-            Show more ({events.length - visible} left)
+            Show more ({ordered.length - visible} left)
           </Button>
         </div>
       )}

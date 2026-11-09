@@ -38,6 +38,14 @@ export function hasEventEnded(event: Pick<Event, "start_datetime" | "end_datetim
   return new Date(event.end_datetime ?? event.start_datetime).getTime() < now;
 }
 
+/** Upcoming events first (soonest on top), then events that already ended (most recent first). */
+export function sortUpcomingFirst<T extends Pick<Event, "start_datetime" | "end_datetime">>(events: T[], now = Date.now()) {
+  const time = (e: T) => new Date(e.start_datetime).getTime();
+  const upcoming = events.filter((e) => !hasEventEnded(e, now)).sort((a, b) => time(a) - time(b));
+  const ended = events.filter((e) => hasEventEnded(e, now)).sort((a, b) => time(b) - time(a));
+  return [...upcoming, ...ended];
+}
+
 export function formatPrice(event: Pick<Event, "is_free" | "ticket_price">) {
   if (event.is_free || !event.ticket_price) return "Free";
   return `Rs. ${event.ticket_price.toLocaleString("en-PK")}`;

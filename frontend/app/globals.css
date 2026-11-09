@@ -37,6 +37,11 @@
   @apply z-0 h-full w-full rounded-card font-jakarta;
 }
 
+/* Soften the stock OpenStreetMap tiles so the coloured pins stand out. */
+.leaflet-tile-pane {
+  filter: saturate(0.55) contrast(0.98) brightness(1.04);
+}
+
 /* Category-coloured map pin (a rotated teardrop built from one element). */
 .eh-pin-wrap {
   background: none;

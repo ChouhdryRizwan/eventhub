@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { List, Map as MapIcon } from "lucide-react";
 import { searchEvents } from "@/app/actions/events";
-import EventFilters from "@/components/events/EventFilters";
+import EventFilters, { EventSearch } from "@/components/events/EventFilters";
 import EventGrid from "@/components/events/EventGrid";
 import EventMap from "@/components/events/EventMap";
 import { Button } from "@/components/ui/button";
@@ -114,28 +114,50 @@ export default function EventsExplorer({
   }, []);
 
   const mapActive = isDesktop || view === "map";
+  const dirty = selectedCategories.length > 0 || search.trim() !== "" || featuredOnly;
   const noResults = !loading && !error && events.length === 0;
 
   return (
-    <main className="mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-6">
-      <div className="mb-5">
-        <h1 className="mb-4 text-3xl font-bold text-gray-900">Explore events</h1>
-        <EventFilters
-          categories={categories}
-          selected={selectedCategories}
-          search={search}
-          featuredOnly={featuredOnly}
-          onToggleFeatured={() => setFeaturedOnly((v) => !v)}
-          onToggleCategory={toggleCategory}
-          onClearCategories={() => setSelectedCategories([])}
-          onSearchChange={setSearch}
-          onReset={reset}
-        />
+    <main>
+      <section className="bg-ink text-white">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-5 px-4 py-7 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-lighter">Discover</p>
+            <h1 className="mt-1 font-syne text-3xl font-bold sm:text-4xl">Explore events</h1>
+            <p className="mt-1.5 max-w-xl text-sm text-gray-400">
+              Find what&apos;s happening across Karachi. Browse the map, filter by category and open any event for details.
+            </p>
+          </div>
+          <EventSearch search={search} dirty={dirty} onSearchChange={setSearch} onReset={reset} className="w-full lg:max-w-xl" />
+        </div>
+      </section>
+
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6">
+          <EventFilters
+            categories={categories}
+            selected={selectedCategories}
+            featuredOnly={featuredOnly}
+            onToggleFeatured={() => setFeaturedOnly((v) => !v)}
+            onToggleCategory={toggleCategory}
+            onClearCategories={() => setSelectedCategories([])}
+          />
+        </div>
       </div>
 
+      <div className="mx-auto w-full max-w-[1600px] px-4 py-5 sm:px-6">
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-sm text-gray-600" role="status" aria-live="polite">
-          {loading ? "Updating…" : noResults ? "No results found" : `${events.length} ${events.length === 1 ? "event" : "events"}`}
+          {loading ? (
+            "Updating…"
+          ) : noResults ? (
+            "No results found"
+          ) : (
+            <>
+              <span className="font-bold text-gray-900">{events.length}</span> {events.length === 1 ? "event" : "events"}
+              {dirty && <span className="text-gray-500"> match your filters</span>}
+            </>
+          )}
         </p>
         <div role="tablist" aria-label="Switch between list and map" className="flex rounded-xl bg-gray-100 p-1 lg:hidden">
           {(["list", "map"] as const).map((tab) => (
@@ -157,11 +179,11 @@ export default function EventsExplorer({
         </div>
       </div>
 
-      <div className="grid gap-4 lg:h-[calc(100dvh-17rem)] lg:min-h-[32rem] lg:grid-cols-5">
+      <div className="grid gap-4 lg:h-[calc(100dvh-24rem)] lg:min-h-[32rem] lg:grid-cols-5">
         <section
           aria-label="Event map"
           className={cn(
-            "relative h-[65dvh] overflow-hidden rounded-card border border-gray-200 lg:col-span-3 lg:block lg:h-full",
+            "relative h-[65dvh] overflow-hidden rounded-card border border-gray-200 shadow-sm lg:col-span-3 lg:block lg:h-full",
             view === "map" ? "block" : "hidden",
           )}
         >
@@ -200,6 +222,7 @@ export default function EventsExplorer({
             onReset={reset}
           />
         </section>
+      </div>
       </div>
     </main>
   );
