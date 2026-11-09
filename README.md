@@ -101,7 +101,7 @@ events in the database and shows tappable event cards, so it cannot invent event
 event slugs before anything is shown.
 
 1. Create a free key at <https://aistudio.google.com/apikey>.
-2. Put it in `frontend/.env.local` as `GEMINI_API_KEY=...` (optional: `GEMINI_MODEL`, default `gemini-2.5-flash`) and restart `npm run dev`.
+2. Put it in `frontend/.env.local` as `GEMINI_API_KEY=...` (optional: `GEMINI_MODEL`, default `gemini-3.8-flash`) and restart `npm run dev`.
 3. On Vercel add the same `GEMINI_API_KEY` variable **before** deploying.
 
 Without a key the button still shows, but the chat explains that the assistant isn't switched on. The free tier has request limits, so very busy moments can show
