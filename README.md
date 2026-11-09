@@ -14,11 +14,15 @@ review events and submit their own for admin approval.
 | **Media** | Cloudinary |
 | **Hosting** | Vercel (frontend) · Render (backend) |
 
-**Live URLs** (fill in after deployment)
+**Live URLs**
 
-- Frontend: `https://<your-app>.vercel.app`
-- API: `https://<your-api>.onrender.com`
-- Strapi admin: `https://<your-api>.onrender.com/admin`
+- Frontend: https://eventhub-beige.vercel.app
+- API: https://eventhub-api-ywu6.onrender.com
+- Strapi admin: https://eventhub-api-ywu6.onrender.com/admin
+
+The API runs on Render's free tier, so the first request after a period of inactivity can take up to a minute.
+Outgoing email is disabled on the live site (the free tier blocks SMTP), so sign-up needs no email confirmation
+there; confirmation and RSVP emails work when the backend runs locally with Gmail SMTP configured.
 
 ## Repository layout
 
