@@ -11,7 +11,7 @@ import VenueMap from "@/components/events/VenueMap";
 import CategoryBadge from "@/components/shared/CategoryBadge";
 import { StarDisplay } from "@/components/shared/StarRating";
 import { buttonVariants } from "@/components/ui/button";
-import { getFeaturedEvents, getMyBookmarkForEvent, getMyRsvpForEvent } from "@/lib/api";
+import { getEvents, getFeaturedEvents, getMyBookmarkForEvent, getMyRsvpForEvent } from "@/lib/api";
 import { auth } from "@/lib/auth";
 import { getCachedEvent, getCachedReviews } from "@/lib/data";
 import { SITE_URL } from "@/lib/site";
@@ -22,13 +22,23 @@ type Params = Promise<{ slug: string }>;
 
 // Prerender only the featured events at build time; every other event page is rendered on its
 // first visit and then cached, which keeps builds fast and light on the CMS.
+// Cache Components requires at least one result, and the free-tier API can be asleep when a build
+// runs, so retry (the first request wakes it) and fall back to any events when none are featured.
 export async function generateStaticParams() {
-  try {
-    const { data } = await getFeaturedEvents(6);
-    return data.map((event) => ({ slug: event.slug }));
-  } catch {
-    return [];
+  const attempts = 4;
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      let { data } = await getFeaturedEvents(6);
+      if (data.length === 0) ({ data } = await getEvents({ pageSize: 3 }));
+      if (data.length > 0) return data.map((event) => ({ slug: event.slug }));
+      lastError = new Error("The API returned no events to prerender.");
+    } catch (error) {
+      lastError = error;
+    }
+    if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, 5000));
   }
+  throw lastError;
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
