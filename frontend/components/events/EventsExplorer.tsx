@@ -30,6 +30,7 @@ interface EventsExplorerProps {
   categories: Category[];
   initialCategory: string[];
   initialSearch: string;
+  initialFeatured: boolean;
   initialError?: string;
 }
 
@@ -38,11 +39,13 @@ export default function EventsExplorer({
   categories,
   initialCategory,
   initialSearch,
+  initialFeatured,
   initialError,
 }: EventsExplorerProps) {
   const [events, setEvents] = useState(initialEvents);
   const [selectedCategories, setSelectedCategories] = useState(initialCategory);
   const [search, setSearch] = useState(initialSearch);
+  const [featuredOnly, setFeaturedOnly] = useState(initialFeatured);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(initialError);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
@@ -59,6 +62,7 @@ export default function EventsExplorer({
     seenReset.current = resetCount;
     setSelectedCategories([]);
     setSearch("");
+    setFeaturedOnly(false);
   }, [resetCount]);
 
   // Server-rendered data already matches the initial filters, so skip the first fetch.
@@ -74,13 +78,14 @@ export default function EventsExplorer({
     const params = new URLSearchParams();
     if (selectedCategories.length) params.set("category", selectedCategories.join(","));
     if (search.trim()) params.set("search", search.trim());
+    if (featuredOnly) params.set("featured", "1");
     const query = params.toString();
     window.history.replaceState(null, "", query ? `/events?${query}` : "/events");
 
     const requestId = ++latestRequest.current;
     setLoading(true);
     const timer = setTimeout(async () => {
-      const result = await searchEvents({ category: selectedCategories, search });
+      const result = await searchEvents({ category: selectedCategories, search, featured: featuredOnly });
       if (requestId !== latestRequest.current) return; // a newer filter change superseded this one
       setEvents(result.events);
       setError(result.error);
@@ -89,7 +94,7 @@ export default function EventsExplorer({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [selectedCategories, search]);
+  }, [selectedCategories, search, featuredOnly]);
 
   const toggleCategory = useCallback((slug: string) => {
     setSelectedCategories((current) =>
@@ -100,6 +105,7 @@ export default function EventsExplorer({
   const reset = useCallback(() => {
     setSelectedCategories([]);
     setSearch("");
+    setFeaturedOnly(false);
   }, []);
 
   const handleSelect = useCallback((id: string) => {
@@ -118,6 +124,8 @@ export default function EventsExplorer({
           categories={categories}
           selected={selectedCategories}
           search={search}
+          featuredOnly={featuredOnly}
+          onToggleFeatured={() => setFeaturedOnly((v) => !v)}
           onToggleCategory={toggleCategory}
           onClearCategories={() => setSelectedCategories([])}
           onSearchChange={setSearch}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { Search, Star, X } from "lucide-react";
 import { categoryStyles, cn, fallbackCategoryStyle } from "@/lib/utils";
 import type { Category } from "@/types";
 
@@ -8,6 +8,8 @@ interface EventFiltersProps {
   categories: Category[];
   selected: string[];
   search: string;
+  featuredOnly: boolean;
+  onToggleFeatured: () => void;
   onToggleCategory: (slug: string) => void;
   onClearCategories: () => void;
   onSearchChange: (value: string) => void;
@@ -18,12 +20,14 @@ export default function EventFilters({
   categories,
   selected,
   search,
+  featuredOnly,
+  onToggleFeatured,
   onToggleCategory,
   onClearCategories,
   onSearchChange,
   onReset,
 }: EventFiltersProps) {
-  const dirty = selected.length > 0 || search.trim() !== "";
+  const dirty = selected.length > 0 || search.trim() !== "" || featuredOnly;
 
   return (
     <div className="space-y-3">
@@ -64,6 +68,19 @@ export default function EventFilters({
           )}
         >
           All
+        </button>
+        <button
+          type="button"
+          onClick={onToggleFeatured}
+          aria-pressed={featuredOnly}
+          className={cn(
+            "inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors",
+            featuredOnly
+              ? "border-amber-500 bg-amber-400 text-ink"
+              : "border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-400",
+          )}
+        >
+          <Star className="size-4 fill-current" aria-hidden /> Featured only
         </button>
         {categories.map((category) => {
           const active = selected.includes(category.slug);

@@ -4,17 +4,21 @@ import EventsExplorer from "@/components/events/EventsExplorer";
 import { getEvents } from "@/lib/api";
 import { getCachedCategories } from "@/lib/data";
 
-type SearchParams = Promise<{ category?: string; search?: string }>;
+type SearchParams = Promise<{ category?: string; search?: string; featured?: string }>;
+
+const isFeaturedParam = (value?: string) => value === "1" || value === "true";
 
 // The title reflects the active filter, e.g. "Music & Sports events" or "Search: jazz".
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
-  const { category, search } = await searchParams;
+  const { category, search, featured } = await searchParams;
   const slugs = (category ?? "").split(",").map((s) => s.trim()).filter((s) => /^[a-z0-9-]{1,60}$/.test(s));
   const query = (search ?? "").trim().slice(0, 60);
 
   let title = "Explore events";
   if (query) {
     title = `Search: ${query}`;
+  } else if (isFeaturedParam(featured) && !slugs.length) {
+    title = "Featured events";
   } else if (slugs.length) {
     const categories = await getCachedCategories().catch(() => []);
     const names = slugs.map((slug) => categories.find((c) => c.slug === slug)?.name).filter(Boolean);
@@ -26,7 +30,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     description: "Browse every event on an interactive map or list, filter by category and search by name, venue or organizer.",
     alternates: { canonical: "/events" },
     // Filtered and search result pages are duplicates of /events for search engines.
-    robots: query || slugs.length ? { index: false, follow: true } : undefined,
+    robots: query || slugs.length || isFeaturedParam(featured) ? { index: false, follow: true } : undefined,
   };
 }
 
@@ -47,7 +51,8 @@ function ExplorerSkeleton() {
 }
 
 async function ExplorerData({ searchParams }: { searchParams: SearchParams }) {
-  const { category, search } = await searchParams;
+  const { category, search, featured } = await searchParams;
+  const initialFeatured = isFeaturedParam(featured);
   const initialCategory = (category ?? "")
     .split(",")
     .map((slug) => slug.trim())
@@ -55,7 +60,7 @@ async function ExplorerData({ searchParams }: { searchParams: SearchParams }) {
   const initialSearch = (search ?? "").slice(0, 100);
 
   const [eventsResult, categoriesResult] = await Promise.allSettled([
-    getEvents({ category: initialCategory, search: initialSearch, pageSize: 100 }),
+    getEvents({ category: initialCategory, search: initialSearch, featured: initialFeatured, pageSize: 100 }),
     getCachedCategories(),
   ]);
 
@@ -65,6 +70,7 @@ async function ExplorerData({ searchParams }: { searchParams: SearchParams }) {
       categories={categoriesResult.status === "fulfilled" ? categoriesResult.value : []}
       initialCategory={initialCategory}
       initialSearch={initialSearch}
+      initialFeatured={initialFeatured}
       initialError={eventsResult.status === "rejected" ? "We couldn't load events. Please try again." : undefined}
     />
   );
