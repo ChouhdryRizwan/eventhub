@@ -33,10 +33,10 @@ export class AssistantError extends Error {
   }
 }
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 const BASE_URL = (process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com").replace(/\/$/, "");
 // Used in order when the preferred model is slow or overloaded.
-const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-3.5-flash,gemini-flash-lite-latest").split(",").map((m) => m.trim()).filter(Boolean);
+const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-flash-lite-latest,gemini-3-flash-preview").split(",").map((m) => m.trim()).filter(Boolean);
 const MAX_CARDS = 4;
 
 const todayInKarachi = () =>
