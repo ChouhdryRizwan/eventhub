@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, Phone } from "lucide-react";
 import { FacebookIcon, InstagramIcon, XIcon, YoutubeIcon } from "@/components/layout/SocialIcons";
 
 const explore = [
@@ -58,7 +58,7 @@ export default function Footer() {
             Event<span className="text-primary-lighter">Hub</span>
           </Link>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-gray-400">
-            Karachi&apos;s event guide. Discover concerts, matches, summits and community days on an interactive map, RSVP in a tap and
+            Your guide to events near you. Discover concerts, matches, summits and community days on an interactive map, RSVP in a tap and
             keep your favourites one click away.
           </p>
           <ul className="mt-6 flex gap-2">
@@ -88,10 +88,6 @@ export default function Footer() {
           <h2 className="font-syne text-sm font-bold uppercase tracking-wider text-white">Get in touch</h2>
           <ul className="mt-4 space-y-3 text-sm text-gray-400">
             <li className="flex gap-3">
-              <MapPin className="mt-0.5 size-4 shrink-0 text-primary-lighter" aria-hidden />
-              Karachi, Pakistan
-            </li>
-            <li className="flex gap-3">
               <Mail className="mt-0.5 size-4 shrink-0 text-primary-lighter" aria-hidden />
               <a href="mailto:hello@eventhub.example" className="inline-flex min-h-9 items-center hover:text-primary-lighter">
                 hello@eventhub.example
@@ -111,7 +107,7 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-3 px-4 py-6 text-xs text-gray-400 sm:flex-row sm:items-center sm:px-6">
-          <p>© 2026 EventHub · A CS619 Final Year Project, Karachi.</p>
+          <p>© 2026 EventHub · A CS619 Final Year Project.</p>
           <ul className="flex flex-wrap items-center gap-x-5 gap-y-1">
             <li>
               <Link href="/terms" className="inline-flex min-h-9 items-center hover:text-primary-lighter">
@@ -122,12 +118,6 @@ export default function Footer() {
               <Link href="/privacy" className="inline-flex min-h-9 items-center hover:text-primary-lighter">
                 Privacy policy
               </Link>
-            </li>
-            <li>
-              Photos from{" "}
-              <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-9 items-center underline hover:text-primary-lighter">
-                Unsplash
-              </a>
             </li>
           </ul>
         </div>

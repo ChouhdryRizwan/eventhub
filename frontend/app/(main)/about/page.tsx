@@ -8,12 +8,12 @@ import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "About us",
-  description: "EventHub is Karachi's event guide: one place to find what's on, on an interactive map. Learn why we built it.",
+  description: "EventHub is an event guide for any city: one place to find what's on, on an interactive map. Learn why we built it.",
   alternates: { canonical: "/about" },
 };
 
 const VALUES = [
-  { icon: Compass, title: "Local first", text: "Built around Karachi's venues, neighbourhoods and the way people here actually plan a night out." },
+  { icon: Compass, title: "Local first", text: "Built around local venues, neighbourhoods and the way people actually plan a night out." },
   { icon: Eye, title: "Honest listings", text: "Every submitted event is reviewed before it goes live, so the map shows things that are really happening." },
   { icon: Smartphone, title: "Simple by design", text: "A fast, touch-friendly interface. Find an event, RSVP, get directions — that's it." },
   { icon: HeartHandshake, title: "Open to everyone", text: "Free for attendees and free for organizers, from big concerts to small neighbourhood clean-ups." },
@@ -26,7 +26,7 @@ export default function AboutPage() {
     <main>
       <PageHero
         crumb="About us"
-        title="One place to find what's on in Karachi"
+        title="One place to find what's on, in any city"
         intro="Great events are happening all the time — but they're scattered across posters, group chats and social feeds. EventHub brings them together on a single map."
         image="/images/sections/community.jpg"
         imageAlt="Friends sitting together with their arms around each other"
@@ -101,7 +101,7 @@ export default function AboutPage() {
             A final year project, built properly
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-gray-600">
-            EventHub is the CS619 Final Year Project of a student group in Karachi — designed, built and tested as a
+            EventHub is the CS619 Final Year Project of a student group — designed, built and tested as a
             full web application with a headless CMS, a managed database and cloud hosting.
           </p>
           <ul className="mt-8 flex flex-wrap justify-center gap-2">

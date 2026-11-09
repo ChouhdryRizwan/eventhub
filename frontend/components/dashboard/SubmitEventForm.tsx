@@ -168,7 +168,7 @@ export default function SubmitEventForm({ categories }: { categories: Category[]
       <Card title="When & where">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label htmlFor="start_datetime">Starts (Karachi time)</Label>
+            <Label htmlFor="start_datetime">Starts (local time)</Label>
             <Input id="start_datetime" type="datetime-local" value={values.start_datetime} onChange={set("start_datetime")} required aria-invalid={invalid("start_datetime")} aria-describedby="start-error" />
             <FieldError id="start-error" message={err("start_datetime")} />
           </div>
@@ -182,7 +182,7 @@ export default function SubmitEventForm({ categories }: { categories: Category[]
         </div>
         <div>
           <Label htmlFor="venue_address">Venue address</Label>
-          <Input id="venue_address" value={values.venue_address} onChange={set("venue_address")} required placeholder="e.g. Frere Hall, Civil Lines, Karachi" aria-invalid={invalid("venue_address")} aria-describedby="venue-error" />
+          <Input id="venue_address" value={values.venue_address} onChange={set("venue_address")} required placeholder="e.g. Community Hall, Main Boulevard, your city" aria-invalid={invalid("venue_address")} aria-describedby="venue-error" />
           <FieldError id="venue-error" message={err("venue_address")} />
         </div>
         <div>

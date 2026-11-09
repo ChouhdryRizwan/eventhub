@@ -8,7 +8,7 @@ export default function TopBar() {
       <div className="mx-auto flex h-9 max-w-7xl items-center justify-between px-4 sm:px-6">
         <p className="flex items-center gap-2">
           <MapPin className="size-3.5 text-primary-lighter" aria-hidden />
-          Discover events happening across Karachi — free to browse, free to join.
+          Discover events happening near you — free to browse, free to join.
         </p>
         <nav aria-label="Secondary" className="flex items-center gap-5">
           <Link href="/#faq" className="hover:text-white">

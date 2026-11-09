@@ -125,7 +125,7 @@ export default function EventsExplorer({
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-lighter">Discover</p>
             <h1 className="mt-1 font-syne text-3xl font-bold sm:text-4xl">Explore events</h1>
             <p className="mt-1.5 max-w-xl text-sm text-gray-400">
-              Find what&apos;s happening across Karachi. Browse the map, filter by category and open any event for details.
+              Find what&apos;s happening in your city. Browse the map, filter by category and open any event for details.
             </p>
           </div>
           <EventSearch search={search} dirty={dirty} onSearchChange={setSearch} onReset={reset} className="w-full lg:max-w-xl" />

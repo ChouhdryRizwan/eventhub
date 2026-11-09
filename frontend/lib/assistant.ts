@@ -61,7 +61,7 @@ function catalogLine(e: Event) {
     .join(" | ");
 }
 
-const systemPrompt = (catalog: string) => `You are the EventHub assistant, a friendly helper on an event discovery website for Karachi, Pakistan.
+const systemPrompt = (catalog: string) => `You are the EventHub assistant, a friendly helper on an event discovery website where people find events in their city.
 Today is ${todayInKarachi()} (Pakistan time).
 
 Rules:

@@ -62,7 +62,7 @@ export default function Hero({ categories, soon }: { categories: Category[]; soo
         <div className="lg:col-span-7">
           <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary-lighter backdrop-blur">
             <span className="size-1.5 rounded-full bg-green-400" aria-hidden />
-            Karachi&apos;s event guide
+            Your event guide
           </p>
           <h1 className="mt-6 max-w-2xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
             Find what&apos;s on.

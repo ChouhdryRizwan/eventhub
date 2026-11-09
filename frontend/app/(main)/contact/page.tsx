@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, Phone } from "lucide-react";
 import ContactForm from "@/components/shared/ContactForm";
 import PageHero from "@/components/shared/PageHero";
 
@@ -13,7 +13,6 @@ export const metadata: Metadata = {
 const DETAILS = [
   { icon: Mail, label: "Email", value: "hello@eventhub.example", href: "mailto:hello@eventhub.example" },
   { icon: Phone, label: "Phone", value: "+92 21 3500 0000", href: "tel:+922135000000" },
-  { icon: MapPin, label: "Visit", value: "Karachi, Pakistan" },
   { icon: Clock, label: "Hours", value: "Mon–Sat, 10:00 AM – 6:00 PM" },
 ];
 

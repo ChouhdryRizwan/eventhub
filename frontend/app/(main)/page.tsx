@@ -23,7 +23,7 @@ const TITLE = "EventHub — Discover events around you";
 export const metadata: Metadata = {
   title: { absolute: TITLE },
   description:
-    "Find concerts, sports, tech summits, food festivals and community events in Karachi on an interactive map. RSVP, save favourites and share your own events.",
+    "Find concerts, sports, tech summits, food festivals and community events near you on an interactive map. RSVP, save favourites and share your own events.",
   alternates: { canonical: "/" },
   openGraph: {
     title: TITLE,

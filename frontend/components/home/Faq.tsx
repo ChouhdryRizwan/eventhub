@@ -24,7 +24,7 @@ export const FAQS = [
   },
   {
     q: "Which cities are covered?",
-    a: "EventHub is currently focused on Karachi, with events across popular venues in the city.",
+    a: "EventHub is open to every city. Organizers can list events anywhere, and the map shows them wherever they happen.",
   },
 ];
 
