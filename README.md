@@ -118,39 +118,6 @@ Without a key the button still shows, but the chat explains that the assistant i
 To make someone an Administrator: set `ADMIN_SEED_EMAIL`/`ADMIN_SEED_PASSWORD`, or in Strapi admin open
 *Content Manager → User* and set the user's role to **Administrator**.
 
-## Deployment (Days 13–15)
-
-**1. Backend on Render**
-
-1. Push the repo to GitHub (see the note below about `frontend/.git`).
-2. Render → *New → Blueprint* → select the repo. It reads `render.yaml`.
-3. Fill the prompted variables: `DATABASE_URL` (Neon pooled string), `APP_KEYS` (4 comma-separated random keys),
-   `PUBLIC_URL` (the Render URL), `CORS_ORIGINS` and `FRONTEND_URL` (your Vercel URL, add after step 2), `SMTP_USER` / `SMTP_PASS` (see *Email*), Cloudinary keys, and
-   `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD` (a strong password).
-4. After the first deploy open `https://<api>/admin`, create the Strapi super-admin and a **Full access API token**.
-5. Check `https://<api>/api/events` returns the 16 seeded events.
-
-**2. Frontend on Vercel**
-
-1. Import the repo, set *Root Directory* to `frontend`.
-2. Environment variables: `NEXT_PUBLIC_STRAPI_URL`, `NEXT_PUBLIC_STRAPI_API_URL` (`…/api`), `NEXT_PUBLIC_SITE_URL`
-   (the Vercel URL), `AUTH_SECRET`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (the Vercel URL), `STRAPI_API_TOKEN`,
-   `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `GEMINI_API_KEY`.
-3. Deploy, then add the Vercel URL to the backend's `CORS_ORIGINS` on Render and redeploy the backend.
-
-**3. Final QA** — log in as a member (RSVP, save, review, submit an event), log in as admin and approve it,
-confirm it shows on the map, and try the site at 375 / 768 / 1280 px.
-
-### Notes for deployment
-
-- **Region matters.** Put NeonDB and the Render service in the **same region** (and as close to Karachi as
-  possible, e.g. Singapore). A Neon project far from the API makes every request 2–3 s slower.
-- **Render free tier sleeps** after inactivity; the first request after a nap can take ~30–60 s. Open the API URL
-  once before a demo.
-- **Nested git repository.** `frontend/` was created with its own `.git`. For a single monorepo remove it
-  (`rm -rf frontend/.git`) before the first `git init` at the repository root.
-- Rotate any credentials that were shared while developing (Neon password, Cloudinary secret, API token).
-
 ## Quality checks run on this build
 
 - Strict TypeScript, ESLint-clean production build (`next build`).
