@@ -86,12 +86,19 @@ export async function askAssistant(messages: ChatMessage[], events: Event[]): Pr
   const bySlug = new Map(events.map((e) => [e.slug, e]));
   const catalog = events.map(catalogLine).join("\n");
 
-  let res: Response;
-  try {
-    res = await fetch(`${BASE_URL}/v1beta/models/${MODEL}:generateContent`, {
+  // Thinking models spend most of their time "reasoning" before they answer; for a short catalogue
+  // lookup that only makes the assistant slow, so ask for as little thinking as the model allows.
+  const thinkingFor = (model: string): Record<string, unknown> | undefined => {
+    if (/2\.5-flash/.test(model)) return { thinkingBudget: 0 };
+    if (/gemini-3/.test(model)) return { thinkingLevel: "low" };
+    return undefined;
+  };
+
+  const call = (thinkingConfig: Record<string, unknown> | undefined) =>
+    fetch(`${BASE_URL}/v1beta/models/${MODEL}:generateContent`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      signal: AbortSignal.timeout(25000),
+      signal: AbortSignal.timeout(30000),
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemPrompt(catalog) }] },
         contents: messages.map((m) => ({
@@ -110,13 +117,26 @@ export async function askAssistant(messages: ChatMessage[], events: Event[]): Pr
             },
             required: ["reply", "event_slugs"],
           },
-          // 2.5 Flash "thinks" by default and thinking tokens eat the output budget.
-          ...(/2\.5-flash/.test(MODEL) ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+          ...(thinkingConfig ? { thinkingConfig } : {}),
         },
       }),
     });
-  } catch {
-    throw new AssistantError("The assistant took too long to answer. Please try again.", 504);
+
+  let res: Response;
+  try {
+    res = await call(thinkingFor(MODEL));
+    // A model that rejects the thinking option answers 400 straight away: retry once without it.
+    if (res.status === 400 && thinkingFor(MODEL)) {
+      console.warn(`Gemini rejected the thinking option (${(await res.text()).slice(0, 200)}); retrying without it.`);
+      res = await call(undefined);
+    }
+  } catch (error) {
+    const timedOut = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
+    console.error(`Gemini request ${timedOut ? "timed out" : "failed"} (model ${MODEL}):`, error);
+    throw new AssistantError(
+      timedOut ? "The assistant took too long to answer. Please try again." : "The assistant could not be reached. Please try again.",
+      timedOut ? 504 : 502,
+    );
   }
 
   if (!res.ok) {

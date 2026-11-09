@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { AssistantError, askAssistant, type ChatMessage } from "@/lib/assistant";
 import { getCachedAssistantEvents } from "@/lib/data";
 
+// Allow the model up to a minute (the default serverless limit can be shorter).
+export const maxDuration = 60;
+
 const MAX_MESSAGES = 6; // conversation turns sent to the model
 const MAX_LENGTH = 400; // characters per message
 const WINDOW_MS = 60_000;
