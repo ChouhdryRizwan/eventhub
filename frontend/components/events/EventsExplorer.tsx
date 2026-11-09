@@ -7,6 +7,7 @@ import EventFilters from "@/components/events/EventFilters";
 import EventGrid from "@/components/events/EventGrid";
 import EventMap from "@/components/events/EventMap";
 import { Button } from "@/components/ui/button";
+import { getEventsResetCount, subscribeEventsReset } from "@/lib/events-reset";
 import { cn } from "@/lib/utils";
 import type { Category, Event } from "@/types";
 
@@ -48,6 +49,17 @@ export default function EventsExplorer({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [view, setView] = useState<"list" | "map">("list");
   const isDesktop = useIsDesktop();
+
+  // The navbar "Events" link asks for a clean list: clear filters (the effect below then refetches and
+  // resets the URL). Also runs when a preserved, hidden page is shown again.
+  const resetCount = useSyncExternalStore(subscribeEventsReset, getEventsResetCount, () => 0);
+  const seenReset = useRef(resetCount);
+  useEffect(() => {
+    if (seenReset.current === resetCount) return;
+    seenReset.current = resetCount;
+    setSelectedCategories([]);
+    setSearch("");
+  }, [resetCount]);
 
   // Server-rendered data already matches the initial filters, so skip the first fetch.
   const firstRun = useRef(true);

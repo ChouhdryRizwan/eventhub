@@ -7,6 +7,7 @@ import { LayoutDashboard, LogOut, Menu, Shield, X } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { requestEventsReset } from "@/lib/events-reset";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -50,6 +51,7 @@ export default function Navbar() {
             <li key={link.href}>
               <Link
                 href={link.href}
+                onClick={link.href === "/events" ? requestEventsReset : undefined}
                 aria-current={isActive(link.href) ? "page" : undefined}
                 className={cn(
                   "inline-flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold transition-colors hover:bg-gray-100",
@@ -113,6 +115,7 @@ export default function Navbar() {
               <li key={link.href}>
                 <Link
                   href={link.href}
+                onClick={link.href === "/events" ? requestEventsReset : undefined}
                   aria-current={isActive(link.href) ? "page" : undefined}
                   className={cn(
                     "flex min-h-12 items-center rounded-lg px-3 text-base font-semibold",
