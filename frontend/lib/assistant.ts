@@ -36,7 +36,7 @@ export class AssistantError extends Error {
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 const BASE_URL = (process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com").replace(/\/$/, "");
 // Used in order when the preferred model is slow or overloaded.
-const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-2.5-flash").split(",").map((m) => m.trim()).filter(Boolean);
+const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-3.5-flash,gemini-flash-lite-latest").split(",").map((m) => m.trim()).filter(Boolean);
 const MAX_CARDS = 4;
 
 const todayInKarachi = () =>
@@ -133,7 +133,7 @@ export async function askAssistant(messages: ChatMessage[], events: Event[]): Pr
 
   for (const [index, model] of models.entries()) {
     const isLast = index === models.length - 1;
-    const timeoutMs = isLast ? 25000 : 12000;
+    const timeoutMs = isLast ? 20000 : 10000;
     try {
       let attempt = await call(model, thinkingFor(model), timeoutMs);
       // A model that rejects the thinking option answers 400 straight away: retry once without it.
