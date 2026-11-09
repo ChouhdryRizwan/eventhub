@@ -35,6 +35,8 @@ export class AssistantError extends Error {
 
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 const BASE_URL = (process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com").replace(/\/$/, "");
+// Used in order when the preferred model is slow or overloaded.
+const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-2.5-flash").split(",").map((m) => m.trim()).filter(Boolean);
 const MAX_CARDS = 4;
 
 const todayInKarachi = () =>
@@ -94,11 +96,11 @@ export async function askAssistant(messages: ChatMessage[], events: Event[]): Pr
     return undefined;
   };
 
-  const call = (thinkingConfig: Record<string, unknown> | undefined) =>
-    fetch(`${BASE_URL}/v1beta/models/${MODEL}:generateContent`, {
+  const call = (model: string, thinkingConfig: Record<string, unknown> | undefined, timeoutMs: number) =>
+    fetch(`${BASE_URL}/v1beta/models/${model}:generateContent`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      signal: AbortSignal.timeout(30000),
+      signal: AbortSignal.timeout(timeoutMs),
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemPrompt(catalog) }] },
         contents: messages.map((m) => ({
@@ -122,28 +124,49 @@ export async function askAssistant(messages: ChatMessage[], events: Event[]): Pr
       }),
     });
 
-  let res: Response;
-  try {
-    res = await call(thinkingFor(MODEL));
-    // A model that rejects the thinking option answers 400 straight away: retry once without it.
-    if (res.status === 400 && thinkingFor(MODEL)) {
-      console.warn(`Gemini rejected the thinking option (${(await res.text()).slice(0, 200)}); retrying without it.`);
-      res = await call(undefined);
+  // Try the preferred model first; when it is slow or overloaded (new models often answer 503 "high
+  // demand" or hang), quietly fall back to the next one so the visitor still gets an answer.
+  const models = [...new Set([MODEL, ...FALLBACK_MODELS])];
+  let res: Response | undefined;
+  let busy = false;
+  let timedOut = false;
+
+  for (const [index, model] of models.entries()) {
+    const isLast = index === models.length - 1;
+    const timeoutMs = isLast ? 25000 : 12000;
+    try {
+      let attempt = await call(model, thinkingFor(model), timeoutMs);
+      // A model that rejects the thinking option answers 400 straight away: retry once without it.
+      if (attempt.status === 400 && thinkingFor(model)) {
+        console.warn(`Gemini ${model} rejected the thinking option (${(await attempt.text()).slice(0, 200)}); retrying without it.`);
+        attempt = await call(model, undefined, timeoutMs);
+      }
+      if (attempt.ok) {
+        res = attempt;
+        break;
+      }
+      const detail = (await attempt.text()).slice(0, 300);
+      console.warn(`Gemini ${model} answered ${attempt.status}: ${detail}`);
+      if (attempt.status === 429) busy = true;
+      // Overloaded, rate limited or unknown model: try the next one. Other 4xx errors will not improve.
+      if (attempt.status === 429 || attempt.status === 404 || attempt.status >= 500) continue;
+      throw new AssistantError("The assistant is unavailable right now.", 502);
+    } catch (error) {
+      if (error instanceof AssistantError) throw error;
+      const isTimeout = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
+      if (isTimeout) timedOut = true;
+      console.warn(`Gemini ${model} ${isTimeout ? "timed out" : "failed"}:`, error);
     }
-  } catch (error) {
-    const timedOut = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
-    console.error(`Gemini request ${timedOut ? "timed out" : "failed"} (model ${MODEL}):`, error);
-    throw new AssistantError(
-      timedOut ? "The assistant took too long to answer. Please try again." : "The assistant could not be reached. Please try again.",
-      timedOut ? 504 : 502,
-    );
   }
 
-  if (!res.ok) {
-    console.error(`Gemini request failed: ${res.status} ${(await res.text()).slice(0, 300)}`);
+  if (!res) {
     throw new AssistantError(
-      res.status === 429 ? "The assistant is busy right now. Please try again in a minute." : "The assistant is unavailable right now.",
-      res.status === 429 ? 429 : 502,
+      busy
+        ? "The assistant is busy right now. Please try again in a minute."
+        : timedOut
+          ? "The assistant took too long to answer. Please try again."
+          : "The assistant is unavailable right now. Please try again shortly.",
+      busy ? 429 : timedOut ? 504 : 502,
     );
   }
 
