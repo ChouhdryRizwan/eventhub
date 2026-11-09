@@ -19,7 +19,7 @@ export default function TermsPage() {
           heading: "About EventHub",
           paragraphs: [
             "EventHub is a directory that helps people discover events in Karachi. We list events submitted by organizers and reviewed by our team. We do not organize, sell tickets for, or guarantee any event.",
-            "EventHub is a student project (CS619, Aptech Metro Star Gate). It is provided as-is for demonstration and learning purposes.",
+            "EventHub is a student project (CS619). It is provided as-is for demonstration and learning purposes.",
           ],
         },
         {

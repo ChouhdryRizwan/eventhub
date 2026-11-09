@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 const DETAILS = [
   { icon: Mail, label: "Email", value: "hello@eventhub.example", href: "mailto:hello@eventhub.example" },
   { icon: Phone, label: "Phone", value: "+92 21 3500 0000", href: "tel:+922135000000" },
-  { icon: MapPin, label: "Visit", value: "Aptech Metro Star Gate, Karachi, Pakistan" },
+  { icon: MapPin, label: "Visit", value: "Karachi, Pakistan" },
   { icon: Clock, label: "Hours", value: "Mon–Sat, 10:00 AM – 6:00 PM" },
 ];
 

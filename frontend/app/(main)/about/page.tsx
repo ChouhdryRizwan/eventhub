@@ -101,7 +101,7 @@ export default function AboutPage() {
             A final year project, built properly
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-gray-600">
-            EventHub is the CS619 Final Year Project of a student group at Aptech Metro Star Gate, Karachi — designed, built and tested as a
+            EventHub is the CS619 Final Year Project of a student group in Karachi — designed, built and tested as a
             full web application with a headless CMS, a managed database and cloud hosting.
           </p>
           <ul className="mt-8 flex flex-wrap justify-center gap-2">

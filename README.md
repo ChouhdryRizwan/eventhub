@@ -1,7 +1,7 @@
 # EventHub — Event Discovery & Community Engagement Platform
 
 CS619 Final Year Project · Student ID BC210424561 · Group S26PROJECTA3C38 · Supervisor: Amjad Iqbal Khan
-Aptech Metro Star Gate, Karachi · Spring 2026
+Karachi · Spring 2026
 
 EventHub lets people discover events on an interactive map, filter by category, search, RSVP, save favourites,
 review events and submit their own for admin approval.

@@ -89,7 +89,7 @@ export default function Footer() {
           <ul className="mt-4 space-y-3 text-sm text-gray-400">
             <li className="flex gap-3">
               <MapPin className="mt-0.5 size-4 shrink-0 text-primary-lighter" aria-hidden />
-              Aptech Metro Star Gate, Karachi, Pakistan
+              Karachi, Pakistan
             </li>
             <li className="flex gap-3">
               <Mail className="mt-0.5 size-4 shrink-0 text-primary-lighter" aria-hidden />
@@ -111,7 +111,7 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-3 px-4 py-6 text-xs text-gray-400 sm:flex-row sm:items-center sm:px-6">
-          <p>© 2026 EventHub · A CS619 Final Year Project, Aptech Metro Star Gate, Karachi.</p>
+          <p>© 2026 EventHub · A CS619 Final Year Project, Karachi.</p>
           <ul className="flex flex-wrap items-center gap-x-5 gap-y-1">
             <li>
               <Link href="/terms" className="inline-flex min-h-9 items-center hover:text-primary-lighter">
